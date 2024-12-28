@@ -131,7 +131,7 @@ class GameClient(AsyncWebsocketConsumer):
         angle=0,
         canvasW=canvasWidth,
         canvasH=canvasHeight,
-        constSpeed=5
+        constSpeed=0.2
     )
     paddleRight = Paddle(
         paddleWidth=10,

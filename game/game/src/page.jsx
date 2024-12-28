@@ -6,7 +6,7 @@
 /*   By: momihamm <momihamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 12:41:28 by momihamm          #+#    #+#             */
-/*   Updated: 2024/12/28 15:13:00 by momihamm         ###   ########.fr       */
+/*   Updated: 2024/12/28 19:29:36 by momihamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,10 +130,11 @@ function App() {
       canvas.style('left', '10%');         // Move 10% to the right
       canvas.style('border-radius', '15px');
       canvas.style('border', '2px dashed white');
+      canvas.style('background', '#000000');
       // leftPaddle = new Paddle(leftPaddle.x , leftPaddle.y, leftPaddle.width, leftPaddle.height, leftPaddle.speed,10, leftPaddle.score);
       // // console.log(yR)
       // rightPaddle = new Paddle(rightPaddle.x , rightPaddle.y, rightPaddle.width, rightPaddle.height, rightPaddle.speed, 10, rightPaddle.score);
-      ball = new Ball(ballX, ballY, radius, speedX, speedY, angle, canvasWidth, speedY);//momihamm
+      // ball = new Ball(ballX, ballY, radius, speedX, speedY, angle, canvasWidth, speedY);//momihamm
       p5.frameRate(60);
     };
     
@@ -173,8 +174,8 @@ function App() {
       const centerX = canvasW / 2; // Center of the canvas
       const heightT = canvasH;        // Gap between dashes
       
-      p5.background('#000000');
-      p5.stroke(255);               // Set line color to white
+      // p5.background('#000000');
+      p5.stroke(255);           // Set line color to white
       p5.strokeWeight(2);           // Set line thickness
       // Loop to draw dashes
       p5.line(centerX, 0, centerX, heightT); // Draw each dash
@@ -185,56 +186,17 @@ function App() {
       p5.textAlign(p5.CENTER, p5.CENTER); // Center align text
       handlePaddleMovement(p5);
       show(p5, leftPaddle.x, leftPaddle.y, leftPaddle.width, leftPaddle.height, 10);
+      // p5.rect(leftPaddle.x, leftPaddle.y, leftPaddle.width, leftPaddle.height, 10);
       show(p5, rightPaddle.x, rightPaddle.y, rightPaddle.width, rightPaddle.height,  10);
-      p5.fill(255);
-      p5.ellipse(ballX, ballY, 20);
-      
-      // ball.move(p5, leftPaddle, rightPaddle);//momihamm
-
-
-
-
-
-
-
-
-
-
-
-      
-      // ballShow()//momihamm
       // p5.fill(255);
-      // let bx = canvasW /2;
-      // let by = canvasH /2;
-      // let bradius = 20;
-      // p5.ellipse(bx, by, bradius * 2);
-      // sendMessage(JSON.stringify({
-      //   'x': bx,
-      //   'y': by,
-      //   'radius' :bradius,
-      //   // 'speedX': self.speedX,
-      //   // 'speedY': self.speedY,
-      //   // 'angle': self.angle,
-      //   // 'constSpeed': self.constSpeed
-      // }))
-      // momihamm
-
-
-
-
-      
-
-
-
-      
+      // p5.ellipse(ballX, ballY, 20);
       // console.log(ball)
-      p5.text(leftPaddle.score, canvasW * 0.25, canvasH * 0.2); // Left score at 25% width
-          p5.text(rightPaddle.score, canvasW * 0.75, canvasH * 0.2); // Right score at 75% width
+      // p5.text(leftPaddle.score, canvasW * 0.25, canvasH * 0.2); // Left score at 25% width
+          // p5.text(rightPaddle.score, canvasW * 0.75, canvasH * 0.2); // Right score at 75% width
           // ball.show(p5);
       };
         
       const windowResized = (p5) => {
-          // Adjust the canvas size dynamically on window resize
       const canvasWidth = canvasW; // 80% of window width
       const canvasHeight = canvasH; // 60% of window height
       leftPaddle.x = canvasWidth * 0.01; 
@@ -245,14 +207,6 @@ function App() {
       ball.radius = canvasWidth * 0.02;;
       ball.x = canvasWidth * 0.5;
       ball.y = canvasHeight * 0.5;
-      
-      // p5.resizeCanvas(canvasWidth, canvasHeight);
-      // return () => {
-      //   if (close) {
-      //     close();
-      //     console.log('WebSocket connection cleaned up');
-      //   }
-      // };
     };
     return <Sketch setup={setup}  windowResized={windowResized} draw={draw} />;
     
