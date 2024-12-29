@@ -6,7 +6,7 @@
 /*   By: momihamm <momihamm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 12:41:28 by momihamm          #+#    #+#             */
-/*   Updated: 2024/12/28 21:15:29 by momihamm         ###   ########.fr       */
+/*   Updated: 2024/12/29 19:41:28 by momihamm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,8 +102,8 @@ const Canvas = ({playerNumber, playerName, gameG, canvasW, canvasH, ballX, ballY
     p5.fill(255);
     p5.ellipse(ballX, ballY, 20);
     // console.log(ball)
-    // p5.text(leftPaddle.score, canvasW * 0.25, canvasH * 0.2); // Left score at 25% width
-        // p5.text(rightPaddle.score, canvasW * 0.75, canvasH * 0.2); // Right score at 75% width
+    p5.text(scoreR, canvasW * 0.25, canvasH * 0.2); // Left score at 25% width
+    p5.text(scoreL, canvasW * 0.75, canvasH * 0.2); // Right score at 75% width
         // ball.show(p5);
     };
       
@@ -132,7 +132,8 @@ let speedX = 0
 let speedY =  0
 let constSpeed = 0
 let angle = 0
-let score = 0
+let scoreL = 0
+let scoreR = 0
 let leftPaddle = '' 
 let rightPaddle = ''
 let ball = ''
@@ -189,6 +190,8 @@ function App() {
             if (data['type'] === "ballUpdated"){
               ballX = data.ball.x;
               ballY = data.ball.y;
+              scoreL = data.ball.scoreLeft;
+              scoreR = data.ball.scoreRight;
               // console.log(ballX)
             }
             }

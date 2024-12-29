@@ -44,7 +44,7 @@ import threading
     #     self.speedY = 0
 
 class Ball:
-    def __init__(self,x, y, radius, speedX, speedY, angle, canvasW, canvasH, constSpeed):
+    def __init__(self,x, y, radius, speedX, speedY, angle, canvasW, canvasH, constSpeed, scoreLeft, scoreRight):
         self.x = x
         self.y = y
         self.radius = radius
@@ -54,6 +54,8 @@ class Ball:
         self.canvas_width = canvasW
         self.canvas_height = canvasH
         self.constSpeed = constSpeed
+        self.scoreLeft = scoreLeft
+        self.scoreRight = scoreRight
     def to_dict(self):
         return {
             'x': self.x,
@@ -64,7 +66,9 @@ class Ball:
             'angle': self.angle,
             'canvas_width': self.canvas_width,
             'canvas_height': self.canvas_height,
-            'constSpeed': self.constSpeed
+            'constSpeed': self.constSpeed,
+            'scoreLeft': self.scoreLeft,
+            'scoreRight': self.scoreRight
         }
         # this.genSpeed = genSpeed;
         
@@ -85,14 +89,14 @@ class Match:
     
     
 class Paddle:
-    def __init__(self, paddleWidth, paddleHeight, paddleX, paddleY, paddleSpeed, paddleBord, paddleScore, canvasHeight, canvasWidth):
+    def __init__(self, paddleWidth, paddleHeight, paddleX, paddleY, paddleSpeed, paddleBord, canvasHeight, canvasWidth):
         self.paddleWidth = paddleWidth
         self.paddleHeight = paddleHeight
         self.paddleX = paddleX
         self.paddleY = paddleY
         self.paddleSpeed = paddleSpeed
         self.paddleBord = paddleBord
-        self.paddleScore = paddleScore
+        # self.paddleScore = paddleScore #momihamm
         self.canvasHeight = canvasHeight
         self.canvasWidth = canvasWidth
     def to_dict(self):
@@ -103,7 +107,7 @@ class Paddle:
             'y': self.paddleY,
             'speed': self.paddleSpeed,
             'border': self.paddleBord,
-            'score': self.paddleScore,
+            # 'score': self.paddleScore,
             'canvasHeight': self.canvasHeight,
             'canvasWidth': self.canvasWidth 
         }
@@ -131,7 +135,9 @@ class GameClient(AsyncWebsocketConsumer):
         angle=0,
         canvasW=canvasWidth,
         canvasH=canvasHeight,
-        constSpeed=0.2
+        constSpeed=0.2,
+        scoreLeft=0,
+        scoreRight=0
     )
     paddleRight = Paddle(
         paddleWidth=10,
@@ -140,7 +146,7 @@ class GameClient(AsyncWebsocketConsumer):
         paddleY=100,
         paddleSpeed=10,
         paddleBord=10,
-        paddleScore=0,
+        # paddleScore=0,
         canvasHeight=canvasHeight,
         canvasWidth=canvasWidth
     )
@@ -151,7 +157,7 @@ class GameClient(AsyncWebsocketConsumer):
         paddleY=100,
         paddleSpeed=10,
         paddleBord=10,
-        paddleScore=0,
+        # paddleScore=0,
         canvasHeight=canvasHeight,
         canvasWidth=canvasWidth
     )
@@ -285,8 +291,12 @@ class GameClient(AsyncWebsocketConsumer):
 
             # print("kane")
             # Check if the ball has passed the left or right boundary
-            if self.ball.x - self.ball.radius <= 0 or self.ball.x + self.ball.radius >= self.ball.canvas_width:
-                await self._reset_ball()  # Reset the ball to the center 
+            if self.ball.x - self.ball.radius <= 0:
+                await self._reset_ball(self.paddleRight, "Right")  # Reset the ball to the center 
+            if self.ball.x + self.ball.radius >= self.ball.canvas_width:
+                await self._reset_ball(self.paddleLeft, "Left")
+            # if self.ball.x - self.ball.radius <= 0 or self.ball.x + self.ball.radius >= self.ball.canvas_width:
+            #     await self._reset_ball()  # Reset the ball to the center 
             # if self.ball.x - self.ball.radius <= 0 or self.ball.x + self.ball.radius >= self.ball.canvas_width:
             #     # self.ball.speedY *= -1
             #     self.ball.speedX *= -1
@@ -323,7 +333,7 @@ class GameClient(AsyncWebsocketConsumer):
                return False
         if (lORr == "Right"):
             if self.ball.x + self.ball.radius >= paddle.paddleX and self.ball.y - self.ball.radius >= paddle.paddleY and  self.ball.y + self.ball.radius <= paddle.paddleY + paddle.paddleHeight:
-                print ("kmi") 
+                # print ("kmi") 
                 return True
             else:
                 # print ("stormy")
@@ -343,11 +353,19 @@ class GameClient(AsyncWebsocketConsumer):
     #         # self.ball.y <= paddle.paddleY + paddle.paddleHeight
     #     )
     
-    async def _reset_ball(self):
+    async def _reset_ball(self, paddle, lorr):
         self.ball.x = self.ball.canvas_width // 2
         self.ball.y = self.ball.canvas_height // 2
         self.ball.speedX *= -1  # Reverse the horizontal direction
         # self.ball.speedY = 5 if self.ball.speedY > 0 else -5  # Reset to initial vertical speed
+        # zid f score
+        # paddle.paddleScore += 1
+        if lorr == "Left":
+            print ("left")
+            self.ball.scoreRight += 1
+        if lorr == "Right":
+            print ("Right")
+            self.ball.scoreLeft += 1
 
 
     async def paddleMoved(self, event):
