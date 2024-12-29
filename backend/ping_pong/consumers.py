@@ -126,8 +126,8 @@ class GameClient(AsyncWebsocketConsumer):
         x=canvasWidth // 2,
         y=canvasHeight // 2,
         radius=10,
-        speedX=5,
-        speedY=5,
+        speedX=2,
+        speedY=2,
         angle=0,
         canvasW=canvasWidth,
         canvasH=canvasHeight,
@@ -181,7 +181,7 @@ class GameClient(AsyncWebsocketConsumer):
             await self.channel_layer.group_add(self.new_match.group_name, player1['player_name'])
             await self.channel_layer.group_add(self.new_match.group_name, player2['player_name'])
             self.active_matches.append(self.new_match)
-            print(self.ball.to_dict())
+            # print(self.ball.to_dict())
             await self.channel_layer.send(player1['player_name'], 
                 {
                     'type': 'game_started',
@@ -252,7 +252,8 @@ class GameClient(AsyncWebsocketConsumer):
     async def start_ball_movement(self):
         while self.is_active:
             # Update the ball's position
-            print(self.group_name, flush=True)
+            # self.game_group 
+            # print(self.group_name, flush=True)
             self.ball.x += self.ball.speedX
             self.ball.y += self.ball.speedY
 
@@ -263,14 +264,32 @@ class GameClient(AsyncWebsocketConsumer):
             # # Check for collision with the paddles
             # if self._check_paddle_collision(self.paddleRight) or self._check_paddle_collision(self.paddleLeft):
             #     self.ball.speedX *= -1  # Reverse the horizontal direction
+            if await self._check_paddle_collision(self.paddleLeft, "left"):
+                self.ball.speedX *= -1  # Reverse the horizontal direction
+            if await self._check_paddle_collision(self.paddleRight, "Right"):
+                self.ball.speedX *= -1
+            # flAge = False 
+            # flAge = await self._check_paddle_collision(self.paddleLeft)
+            # print (flAge)
+            #     # if self._check_paddle_collision(self.paddleRight):
+            # if flAge == True:
+            #     print("YES!")
+            # if flAge == False:
+            #     print("NO")
+            #     # else:
+            #     #   print("NO!")
+                # self.ballspeedX *= -1  # Reverse the horizontal direction
+                # print(self.ball.x)
+                # print(">>><<<")
+                # print(self.paddleLeft.paddleX)
 
             # print("kane")
-            # # Check if the ball has passed the left or right boundary
-            # if self.ball.x - self.ball.radius <= 0 or self.ball.x + self.ball.radius >= self.ball.canvas_width:
-            #     self._reset_ball()  # Reset the ball to the center
+            # Check if the ball has passed the left or right boundary
             if self.ball.x - self.ball.radius <= 0 or self.ball.x + self.ball.radius >= self.ball.canvas_width:
-                self.ball.speedY *= -1
-                self.ball.speedX *= -1
+                await self._reset_ball()  # Reset the ball to the center 
+            # if self.ball.x - self.ball.radius <= 0 or self.ball.x + self.ball.radius >= self.ball.canvas_width:
+            #     # self.ball.speedY *= -1
+            #     self.ball.speedX *= -1
 
             # Broadcast the updated ball position to the group
             await self.channel_layer.group_send(
@@ -280,7 +299,7 @@ class GameClient(AsyncWebsocketConsumer):
                     'ball': self.ball.to_dict()
                 }
             )
-            print("Mane")
+            # print("Mane")
             # Control the frame rate (e.g., 60 FPS)
             await asyncio.sleep(1/60)
 
@@ -291,18 +310,44 @@ class GameClient(AsyncWebsocketConsumer):
             'ball': event['ball'] 
         }))
 
-    async def _check_paddle_collision(self, paddle):
-        return (
-            self.ball.x + self.ball.radius >= paddle.paddleX and
-            self.ball.x - self.ball.radius <= paddle.paddleX + paddle.paddleWidth and
-            self.ball.y >= paddle.paddleY and
-            self.ball.y <= paddle.paddleY + paddle.paddleHeight
-        )
+    async def _check_paddle_collision(self, paddle, lORr):
+        # print ("mimi")
+        # print ("kmiiiiiiiiiiiiiiiiiiiiiiiiiiiiii")
+            # print (self.ball.x , paddle.paddleX)
+        if (lORr == "left"):
+            if self.ball.x - self.ball.radius <= paddle.paddleX + paddle.paddleWidth and self.ball.y - self.ball.radius >= paddle.paddleY and self.ball.y + self.ball.radius <= paddle.paddleY + paddle.paddleHeight: #and 
+            #    print ("7liwa")
+               return True
+            else:
+            #    print ("bayern")
+               return False
+        if (lORr == "Right"):
+            if self.ball.x + self.ball.radius >= paddle.paddleX and self.ball.y - self.ball.radius >= paddle.paddleY and  self.ball.y + self.ball.radius <= paddle.paddleY + paddle.paddleHeight:
+                print ("kmi") 
+                return True
+            else:
+                # print ("stormy")
+                return False
+                # (
+                    
+                    
+                    # self.ball.x - self.ball.radius <= paddle.paddleX + paddle.paddleWidth and
+                    # self.ball.y >= paddle.paddleY and
+                    # self.ball.y <= paddle.paddleY + paddle.paddleHeight
+                # )
+    # async def _check_paddle_collision(self, paddle):
+    #     return (
+    #         self.ball.x + self.ball.radius >= paddle.paddleX #and
+    #         # self.ball.x - self.ball.radius <= paddle.paddleX + paddle.paddleWidth and
+    #         # self.ball.y >= paddle.paddleY and
+    #         # self.ball.y <= paddle.paddleY + paddle.paddleHeight
+    #     )
+    
     async def _reset_ball(self):
         self.ball.x = self.ball.canvas_width // 2
         self.ball.y = self.ball.canvas_height // 2
         self.ball.speedX *= -1  # Reverse the horizontal direction
-        self.ball.speedY = 5 if self.ball.speedY > 0 else -5  # Reset to initial vertical speed
+        # self.ball.speedY = 5 if self.ball.speedY > 0 else -5  # Reset to initial vertical speed
 
 
     async def paddleMoved(self, event):
